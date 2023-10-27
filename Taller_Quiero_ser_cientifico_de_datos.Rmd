@@ -1,0 +1,31 @@
+---
+title: "RETO CIENTIFICO DE DATOS"
+author: "Cristian Coronel Quezada"
+date: "2023-10-27"
+output: github_document
+---
+
+#-------------Cargando librerías----------------#
+
+```{r}
+
+#Ctrl + a , para seleccionar todo
+#Ctrl + Alt + i , para abrir un nuevo chunk
+
+#install.packages("dplyr") cuando no se tiene descargado aún la libreria
+
+library(dplyr)
+library(openxlsx)
+
+```
+
+#-------------Cargar base de datos----------------#
+
+```{r}
+datos <- read.xlsx("D:/RETO CIENTIFICO DE DATOS/DATA/empresas_HEBM18.xlsx", na.strings = T)
+head(datos)
+str(datos)
+names(datos)
+
+```
+
