@@ -64,7 +64,7 @@ head(datos)
     ## 4 K6420.00 - ACTIVIDADES DE SOCIEDADES DE CARTERA, ES DECIR, UNIDADES TENEDORAS DE ACTIVOS DE UN GRUPO DE EMPRESAS FILIALES (CON PARTICIPACIÓN DE CONTROL EN SU CAPITAL SOCIAL) Y CUYA ACTIVIDAD PRINCIPAL CONSISTE EN LA PROPIEDAD DEL GRUPO. LAS SOCIEDADES DE CARTERA CLASIFICADAS EN ESTA CLASE NO SUMINISTRAN NINGÚN OTRO SERVICIO A LAS EMPRESAS PARTICIPADAS, ES DECIR, NO ADMINISTRAN NI GESTIONAN OTRAS UNIDADES.
     ## 5                                                                                                                                                                                   D3510.01 - ACTIVIDADES DE OPERACIÓN DE INSTALACIONES DE GENERACIÓN DE ENERGÍA ELÉCTRICA, POR DIVERSOS MEDIOS: TÉRMICA (TURBINA DE GAS O DIESEL), NUCLEAR, HIDROELÉCTRICA, SOLAR, MAREAL Y DE OTROS TIPOS INCLUSO DE ENERGÍA RENOVABLE.
     ## 6                           L6810.01 - COMPRA - VENTA, ALQUILER Y EXPLOTACIÓN DE BIENES INMUEBLES PROPIOS O ARRENDADOS, COMO: EDIFICIOS DE APARTAMENTOS Y VIVIENDAS; EDIFICIOS NO RESIDENCIALES, INCLUSO SALAS DE EXPOSICIONES; INSTALACIONES PARA ALMACENAJE, CENTROS COMERCIALES Y TERRENOS; INCLUYE EL ALQUILER DE CASAS Y APARTAMENTOS AMUEBLADOS O SIN AMUEBLAR POR PERÍODOS LARGOS, EN GENERAL POR MESES O POR AÑOS.
-    ##   REGIÓN                                          PROVINCIA
+    ##   REGION                                          PROVINCIA
     ## 1 SIERRA PICHINCHA                                         
     ## 2  COSTA GUAYAS                                            
     ## 3  COSTA GUAYAS                                            
@@ -98,7 +98,7 @@ str(datos)
     ##  $ NOMBRE             : chr  "PTIE- PHOENIX TOWER INTERNATIONAL ECUADOR S.A." "CNO S.A." "FARIBALL HOLDING CORP. C.A. FARIBALLCORP" "VICGRUP S.A." ...
     ##  $ TIPO.COMPAÑIA      : chr  "ANÓNIMA" "SUCURSAL  EXTRANJERA" "ANÓNIMA" "ANÓNIMA" ...
     ##  $ ACTIVIDAD.ECONÓMICA: chr  "F4321.01 - INSTALACIÓN DE ACCESORIOS ELÉCTRICOS, LÍNEAS DE TELECOMUNICACIONES, REDES INFORMÁTICAS Y LÍNEAS DE T"| __truncated__ "F4210.11 - CONSTRUCCIÓN DE CARRETERAS, CALLES, CARRETERAS, Y OTRAS VÍAS PARA VEHÍCULOS O PEATONES." "K6420.00 - ACTIVIDADES DE SOCIEDADES DE CARTERA, ES DECIR, UNIDADES TENEDORAS DE ACTIVOS DE UN GRUPO DE EMPRESA"| __truncated__ "K6420.00 - ACTIVIDADES DE SOCIEDADES DE CARTERA, ES DECIR, UNIDADES TENEDORAS DE ACTIVOS DE UN GRUPO DE EMPRESA"| __truncated__ ...
-    ##  $ REGIÓN             : chr  "SIERRA" "COSTA" "COSTA" "COSTA" ...
+    ##  $ REGION             : chr  "SIERRA" "COSTA" "COSTA" "COSTA" ...
     ##  $ PROVINCIA          : chr  "PICHINCHA                                         " "GUAYAS                                            " "GUAYAS                                            " "GUAYAS                                            " ...
     ##  $ CIUDAD             : chr  "QUITO                                             " "GUAYAQUIL                                         " "SAMBORONDÓN                                       " "GUAYAQUIL                                         " ...
     ##  $ TAMAÑO             : chr  "PEQUEÑA" "PEQUEÑA" "PEQUEÑA" "PEQUEÑA" ...
@@ -116,7 +116,103 @@ names(datos)
 
     ##  [1] "2019"                "2018"                "PR"                 
     ##  [4] "EXPEDIENTE"          "NOMBRE"              "TIPO.COMPAÑIA"      
-    ##  [7] "ACTIVIDAD.ECONÓMICA" "REGIÓN"              "PROVINCIA"          
+    ##  [7] "ACTIVIDAD.ECONÓMICA" "REGION"              "PROVINCIA"          
     ## [10] "CIUDAD"              "TAMAÑO"              "SECTOR"             
     ## [13] "CANT..EMPLEADOS"     "ACTIVO"              "PATRIMONIO"         
     ## [16] "INGRESOS.POR.VENTA"  "UTILIDAD"            "INGRESOS"
+
+\#————–Manejo de bases de datos—————-#
+
+``` r
+#pipe  %>% 
+#select
+#filter
+
+#shortcut %>%   ctrl+shift+m
+#asigno <-  alt+ - 
+
+datos <- datos %>% filter(complete.cases(.))
+
+nuevadata <- datos %>% 
+  select(NOMBRE,REGION,PROVINCIA,CIUDAD,INGRESOS,CANT..EMPLEADOS,UTILIDAD) %>% 
+  filter(INGRESOS <= 100000 & INGRESOS > 10000)
+
+
+#CAMBIANDO DE ESCALA
+
+nuevadata$INGRESOS <- nuevadata$INGRESOS /1000
+nuevadata$INGRESOS <- nuevadata$INGRESOS /1000
+
+#INSPECCIONANDO BASE DE DATOS
+
+summary(nuevadata)
+```
+
+    ##     NOMBRE             REGION           PROVINCIA            CIUDAD         
+    ##  Length:339         Length:339         Length:339         Length:339        
+    ##  Class :character   Class :character   Class :character   Class :character  
+    ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+    ##                                                                             
+    ##                                                                             
+    ##                                                                             
+    ##     INGRESOS       CANT..EMPLEADOS      UTILIDAD     
+    ##  Min.   :0.01077   Min.   :   0.00   Min.   :     0  
+    ##  1st Qu.:0.04145   1st Qu.:   4.00   1st Qu.: 22201  
+    ##  Median :0.07242   Median :   4.00   Median : 54695  
+    ##  Mean   :0.06584   Mean   :  32.71   Mean   :113792  
+    ##  3rd Qu.:0.09129   3rd Qu.:   7.00   3rd Qu.:138878  
+    ##  Max.   :0.10000   Max.   :8866.00   Max.   :897481
+
+\#———-Funciones super poderosas de dplyr———–#
+
+``` r
+#group_by
+#summarise
+#arrange
+
+nuevadata2 <- nuevadata %>% 
+  group_by(REGION) %>% 
+  summarise(PROM_INGRESOS=mean(INGRESOS)) %>% 
+  arrange(-PROM_INGRESOS)
+
+nuevadata2
+```
+
+    ## # A tibble: 4 × 2
+    ##   REGION    PROM_INGRESOS
+    ##   <chr>             <dbl>
+    ## 1 SIERRA           0.0687
+    ## 2 GALAPAGOS        0.0677
+    ## 3 COSTA            0.0633
+    ## 4 ORIENTE          0.0541
+
+``` r
+nuevadata2 <- nuevadata %>% 
+  group_by(REGION,CIUDAD) %>% 
+  summarise(PROM_INGRESOS=mean(INGRESOS),
+            MAX_INGRESOS=max(INGRESOS)) %>% 
+  arrange(-PROM_INGRESOS)
+```
+
+    ## `summarise()` has grouped output by 'REGION'. You can override using the
+    ## `.groups` argument.
+
+``` r
+nuevadata2
+```
+
+    ## # A tibble: 40 × 4
+    ## # Groups:   REGION [4]
+    ##    REGION CIUDAD                                      PROM_INGRESOS MAX_INGRESOS
+    ##    <chr>  <chr>                                               <dbl>        <dbl>
+    ##  1 SIERRA "SANTA ISABEL                             …        0.0976       0.0976
+    ##  2 SIERRA "SANTA ROSA DE CUSUBAMBA                  …        0.0951       0.0951
+    ##  3 SIERRA "SARAGURO                                 …        0.0949       0.0949
+    ##  4 COSTA  "SALINAS                                  …        0.0939       0.0939
+    ##  5 COSTA  "MANTA                                    …        0.0932       0.0932
+    ##  6 COSTA  "NARANJAL                                 …        0.0902       0.0902
+    ##  7 SIERRA "SANGOLQUÍ                                …        0.0898       0.0913
+    ##  8 SIERRA "MACHACHI                                 …        0.0891       0.0891
+    ##  9 COSTA  "ATACAMES                                 …        0.0891       0.0891
+    ## 10 COSTA  "DAULE                                    …        0.0887       0.099 
+    ## # ℹ 30 more rows

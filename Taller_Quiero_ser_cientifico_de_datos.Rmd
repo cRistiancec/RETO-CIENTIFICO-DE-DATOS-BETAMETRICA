@@ -29,3 +29,55 @@ names(datos)
 
 ```
 
+#--------------Manejo de bases de datos----------------#
+
+```{r}
+#pipe  %>% 
+#select
+#filter
+
+#shortcut %>%   ctrl+shift+m
+#asigno <-  alt+ - 
+
+datos <- datos %>% filter(complete.cases(.))
+
+nuevadata <- datos %>% 
+  select(NOMBRE,REGION,PROVINCIA,CIUDAD,INGRESOS,CANT..EMPLEADOS,UTILIDAD) %>% 
+  filter(INGRESOS <= 100000 & INGRESOS > 10000)
+
+
+#CAMBIANDO DE ESCALA
+
+nuevadata$INGRESOS <- nuevadata$INGRESOS /1000
+nuevadata$INGRESOS <- nuevadata$INGRESOS /1000
+
+#INSPECCIONANDO BASE DE DATOS
+
+summary(nuevadata)
+
+```
+#----------Funciones super poderosas de dplyr-----------#
+
+```{r}
+#group_by
+#summarise
+#arrange
+
+nuevadata2 <- nuevadata %>% 
+  group_by(REGION) %>% 
+  summarise(PROM_INGRESOS=mean(INGRESOS)) %>% 
+  arrange(-PROM_INGRESOS)
+
+nuevadata2
+
+nuevadata2 <- nuevadata %>% 
+  group_by(REGION,CIUDAD) %>% 
+  summarise(PROM_INGRESOS=mean(INGRESOS),
+            MAX_INGRESOS=max(INGRESOS)) %>% 
+  arrange(-PROM_INGRESOS)
+
+nuevadata2
+
+```
+
+
